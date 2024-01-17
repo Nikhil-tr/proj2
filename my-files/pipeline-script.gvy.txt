@@ -6,16 +6,16 @@ pipeline {
         stage('build docker image') {
             steps {
                 git branch: 'main', url: 'https://github.com/Nikhil-tr/proj2.git'
-                sh 'docker build --file $WORKSPACE/my-files/dockerfile --tag docker.io/nikhiltr1/proj2:$BUILD_NUMBER .'                
+                sh 'docker build --file $WORKSPACE/dockerfile --tag docker.io/nikhiltr1/proj2:$BUILD_NUMBER .'                
             }
         }
         
         stage('push to dockerhub') {
             steps {
                 echo 'push......'
-                withCredentials([string(credentialsId: 'dockerhublogin', variable: 'dockerhublogin')]) {
+                withCredentials([string(credentialsId: 'dockerhubpwd', variable: 'dockerhubpwd')]) {
                     sh 'docker build --file $WORKSPACE/Dockerfile --tag docker.io/nikhiltr1/proj2:$BUILD_NUMBER .'
-                    sh 'docker login docker.io -u nikhiltr1 -p ${dockerhublogin}'
+                    sh 'docker login docker.io -u nikhiltr1 -p ${dockerhubpwd}'
                     sh 'docker push docker.io/nikhiltr1/proj2:$BUILD_NUMBER'
                 }
             }
@@ -23,7 +23,7 @@ pipeline {
         stage('deploy on kube') {
             steps {
                 echo 'push......'
-                sh 'ansible-playbook $WORKSPACE/my-files/deploy-kube.yml --extra-vars "build=$BUILD_NUMBER"'
+                sh 'ansible-playbook $WORKSPACE/deploy-kube.yaml --extra-vars "build=$BUILD_NUMBER"'
             }
         }
     }
