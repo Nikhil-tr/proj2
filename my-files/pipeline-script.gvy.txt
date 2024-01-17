@@ -23,7 +23,7 @@ pipeline {
         stage('deploy on kube') {
             steps {
                 echo 'push......'
-                sh 'ansible-playbook --inventory /tmp/inv $WORKSPACE/my-files/deploy-kube.yml --extra-vars "env=prod build=$BUILD_NUMBER"'
+                sh 'ansible-playbook $WORKSPACE/my-files/deploy-kube.yml --extra-vars "build=$BUILD_NUMBER"'
             }
         }
     }
