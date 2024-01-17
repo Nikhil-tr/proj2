@@ -1,4 +1,4 @@
-- hosts: "{{ env }}"
+- hosts: localhost
   #become: yes
   tasks: 
     - name: Deploying Application pods...
@@ -21,8 +21,8 @@
             echo "Creating App Services"
             kubectl expose deployment proj2 --name proj2 --type NodePort --port 80 --target-port 8080
          fi
-    #- name: increase replicas 
-    # shell: kubectl scale deploy proj2 --replicas=1
+    - name: increase replicas 
+      shell: kubectl scale deploy proj2 --replicas=2
       
     #- name: deploy app
     #  shell: kubectl create deployment projapp --image=nikhiltr1/projapp:{{ build }}
