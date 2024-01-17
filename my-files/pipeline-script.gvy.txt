@@ -6,7 +6,7 @@ pipeline {
         stage('build docker image') {
             steps {
                 git branch: 'main', url: 'https://github.com/Nikhil-tr/proj2.git'
-                sh 'docker build --file $WORKSPACE/dockerfile --tag docker.io/nikhiltr1/proj2:$BUILD_NUMBER .'                
+                sh 'docker build --file $WORKSPACE/my-files/dockerfile --tag docker.io/nikhiltr1/proj2:$BUILD_NUMBER .'                
             }
         }
         
@@ -23,7 +23,7 @@ pipeline {
         stage('deploy on kube') {
             steps {
                 echo 'push......'
-                sh 'ansible-playbook --inventory /tmp/inv $WORKSPACE/deploy/deploy-kube.yml --extra-vars "env=prod build=$BUILD_NUMBER"'
+                sh 'ansible-playbook --inventory /tmp/inv $WORKSPACE/my-files/deploy-kube.yml --extra-vars "env=prod build=$BUILD_NUMBER"'
             }
         }
     }
