@@ -19,7 +19,7 @@
             #kubectl delete svc `kubectl get svc | grep proj2 | awk '{print $1}'`
          else
             echo "Creating App Services"
-            kubectl expose deployment proj2 --name proj2 --type NodePort --port 80 --node-port 30023
+            kubectl expose deployment proj2 --name proj2 --type NodePort --port 80
          fi
     - name: increase replicas 
       shell: kubectl scale deploy proj2 --replicas=2
