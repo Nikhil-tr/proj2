@@ -76,6 +76,8 @@ resource "aws_instance" "kube-master"{
                   #!/bin/bash
                   sudo su -
                   hostnamectl set-hostname kube-master
+                  sudo wget https://raw.githubusercontent.com/Nikhil-tr/install/main/ansible.sh
+                  /bin/bash ansible.sh
                   sudo wget https://raw.githubusercontent.com/Nikhil-tr/install/main/java11.sh
                   /bin/bash java11.sh
                   sudo wget https://raw.githubusercontent.com/Nikhil-tr/install/main/kube-master.sh
