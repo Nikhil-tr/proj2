@@ -1,0 +1,118 @@
+resource "aws_security_group" "jenkin-sg" {
+  name        = "jenkin-sg"
+  description = "Allow all inbound and outbound traffic"
+
+  ingress {
+   description      = "ssh"
+   from_port        = 22
+   to_port          = 22
+   protocol         = "tcp"
+   cidr_blocks      = ["0.0.0.0/0"]
+  }
+  ingress {
+   description      = "jenkin on anywhere"
+   from_port        = 8080
+   to_port          = 8080
+   protocol         = "tcp"
+   cidr_blocks      = ["0.0.0.0/0"]
+  }
+  egress {
+   description      = "allow all traffic"
+   from_port        = 0
+   to_port          = 0
+   protocol         = "-1"
+   cidr_blocks      = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "kube-sg" {
+  name        = "kube-sg"
+  description = "Allow all inbound and outbound traffic"
+  ##vpc_id      =
+
+  ingress {
+   description      = "allow ssh form any ipv4"
+   from_port        = 22
+   to_port          = 22
+   protocol         = "tcp"
+   cidr_blocks      = ["0.0.0.0/0"]
+  }
+  egress {
+   description      = "allow all traffic"
+   from_port        = 0
+   to_port          = 0
+   protocol         = "-1"
+   cidr_blocks      = ["0.0.0.0/0"]
+  }
+}
+resource "aws_instance" "jenkins"{
+  tags = {
+    Name = "jenkin-master"
+  }
+  ami = "ami-03f4878755434977f"
+  instance_type = "t2.medium"
+  key_name = "mumbaikey"
+  security_groups = ["jenkin-sg"]
+  user_data = <<-EOF
+                  #!/bin/bash
+                  sudo su -
+                  hostnamectl set-hostname jenkin
+                  sudo wget https://raw.githubusercontent.com/Nikhil-tr/install/main/java11.sh
+                  /bin/bash java11.sh
+                  sudo wget https://raw.githubusercontent.com/Nikhil-tr/install/main/jenkin.sh
+                  /bin/bash jenkin.sh
+               EOF
+}
+
+resource "aws_instance" "kube-master"{
+  tags = {
+    Name = "kube-master"
+  }
+  ami = "ami-03f4878755434977f"
+  instance_type = "t2.medium"
+  key_name = "mumbaikey"
+  security_groups = ["kube-sg"]
+  user_data = <<-EOF
+                  #!/bin/bash
+                  sudo su -
+                  hostnamectl set-hostname kube-master
+                  sudo wget https://raw.githubusercontent.com/Nikhil-tr/install/main/java11.sh
+                  /bin/bash java11.sh
+                  sudo wget https://raw.githubusercontent.com/Nikhil-tr/install/main/kube-master.sh
+                  /bin/bash kube-master.sh
+               EOF
+}
+
+resource "aws_instance" "kube-node1"{
+  tags = {
+    Name = "kube-node1"
+  }
+  ami = "ami-03f4878755434977f"
+  instance_type = "t2.medium"
+  key_name = "mumbaikey"
+  security_groups = ["kube-sg"]
+  user_data = <<-EOF
+                  #!/bin/bash
+                  sudo su -
+                  hostnamectl set-hostname kube-node1
+                  sudo wget https://raw.githubusercontent.com/Nikhil-tr/install/main/kube-client.sh
+                  /bin/bash kube-client.sh
+               EOF
+}
+
+resource "aws_instance" "kube-node2"{
+  tags = {
+    Name = "kube-node2"
+  }
+  ami = "ami-03f4878755434977f"
+  instance_type = "t2.medium"
+  key_name = "mumbaikey"
+  security_groups = ["kube-sg"]
+  user_data = <<-EOF
+                  #!/bin/bash
+                  sudo su -
+                  hostnamectl set-hostname kube-node2
+                  sudo wget https://raw.githubusercontent.com/Nikhil-tr/install/main/kube-client.sh
+                  /bin/bash kube-client.sh
+               EOF
+}

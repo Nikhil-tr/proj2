@@ -1,0 +1,30 @@
+pipeline {
+    agent {
+        label 'kube-master'
+    }
+    stages {
+        stage('build docker image') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Nikhil-tr/proj2.git'
+                sh 'docker build --file $WORKSPACE/dockerfile --tag docker.io/nikhiltr1/proj2:$BUILD_NUMBER .'                
+            }
+        }
+        
+        stage('push to dockerhub') {
+            steps {
+                echo 'push......'
+                withCredentials([string(credentialsId: 'dockerhublogin', variable: 'dockerhublogin')]) {
+                    sh 'docker build --file $WORKSPACE/Dockerfile --tag docker.io/nikhiltr1/proj2:$BUILD_NUMBER .'
+                    sh 'docker login docker.io -u nikhiltr1 -p ${dockerhublogin}'
+                    sh 'docker push docker.io/nikhiltr1/proj2:$BUILD_NUMBER'
+                }
+            }
+        }
+        stage('deploy on kube') {
+            steps {
+                echo 'push......'
+                sh 'ansible-playbook --inventory /tmp/inv $WORKSPACE/deploy/deploy-kube.yml --extra-vars "env=prod build=$BUILD_NUMBER"'
+            }
+        }
+    }
+}
